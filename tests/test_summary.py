@@ -1,8 +1,9 @@
 import pytest
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-from easy_draw import summary_plot
+from yasiu_vis.visualisation import summary_plot, random_data_frame
 
 
 @pytest.fixture()
@@ -20,14 +21,41 @@ def short_data_frame():
     return df
 
 
-# @pytest.fixture()
 def test_first(short_data_frame):
-    summary_plot
-
-
-def test_first(short_data_frame):
-    # pass
     summary_plot(short_data_frame, show=False)
     # import matplotlib
     # pass
     plt.close()
+
+
+os.makedirs("test_pics", exist_ok=True)
+
+data_1 = [
+        (cols, cls_n)
+        for cols in range(1, 20, 3)
+        for cls_n in range(1, 20)
+]
+
+
+@pytest.mark.parametrize("cols_n,cls_n", data_1)
+def test_2_varying_data(cols_n, cls_n):
+    data = random_data_frame(100, cols_n, cls_n)
+    summary_plot(data, group_key='class', show=False)
+    plt.savefig(f"test_pics{os.path.sep}test_2_col{cols_n}_cl{cls_n}.png")
+    plt.close("all")
+
+
+# @pytest.mark.parametrize("class_N", list(range(6, 25)))
+# def test_3_varying_class_n(class_N):
+#     data = random_data_frame(300, 10, classes_N=class_N)
+#     summary_plot(data, group_key='class', show=False)
+#     plt.savefig(f"test_pics{os.path.sep}test_3_out_{class_N}.png")
+#     plt.close("all")
+
+
+@pytest.mark.parametrize("class_N", list(range(5, 12)))
+def test_4_grouping_values(class_N):
+    data = random_data_frame(200, 10, classes_N=class_N)
+    summary_plot(data, group_key='col-A', show=False)
+    plt.savefig(f"test_pics{os.path.sep}test_4_out_{class_N}.png")
+    plt.close("all")

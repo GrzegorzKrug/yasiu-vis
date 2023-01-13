@@ -1,6 +1,6 @@
 import pytest
 
-from yasiu.visualisation import get_grid_dims
+from yasiu_vis.visualisation import get_grid_dims
 
 
 @pytest.mark.parametrize('size', [a for a in range(100)])

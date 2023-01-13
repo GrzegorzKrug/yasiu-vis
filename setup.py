@@ -1,14 +1,14 @@
 from setuptools import setup
-from yasiu import VERSION
+from yasiu_vis import VERSION
 
 
 project_urls = {
-        "1. Time Package": "https://pypi.org/project/yasiu.time/",
-        "2. Math Package": "https://pypi.org/project/yasiu.math/",
-        "3. Image Package": "https://pypi.org/project/yasiu.image/",
-        "3. Visualisation Package": "https://pypi.org/project/yasiu.visualisation/",
+        "1. Time Package": "https://pypi.org/project/yasiu-time/",
+        "2. Math Package": "https://pypi.org/project/yasiu-math/",
+        "3. Image Package": "https://pypi.org/project/yasiu-image/",
+        "4. Visualisation Package": "https://pypi.org/project/yasiu-vis/",
 
-        "4. Source repo": "https://github.com/GrzegorzKrug/yasiu.visualisation",
+        "5. Source repo": "https://github.com/GrzegorzKrug/yasiu.visualisation",
 }
 
 classifiers = [
@@ -39,7 +39,6 @@ keywords = [
         "pyplot",
         "visualisation",
         "dataframe",
-
 ]
 
 author = "Grzegorz Krug"
@@ -53,11 +52,11 @@ with open(readme_path, "rt") as file:
 
 python_requires = '>=3.7'
 install_requires = [
-        "pandas", "matplotlib",
+        "pandas", "matplotlib", "yasiu-math"
 ]
 
 setup(
-        name='yasiu.visualisation',
+        name='yasiu-vis',
         version=".".join([str(num) for num in VERSION]),
         author=author,
         author_email=author_email,

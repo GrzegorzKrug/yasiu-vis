@@ -6,6 +6,11 @@ __pycache__/
 # Cache
 *.idea
 
+# Pictures
+*.png
+*.jpg
+*.jpeg
+
 
 # C extensions
 *.so
