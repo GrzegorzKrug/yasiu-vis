@@ -1,26 +1,25 @@
-# Readme of `yasiu.visualisation`
+# Readme of `yasiu-vis`
 
 High level functions, to quickly visualise data frames.
 
 ## Installation
 
 ```shell
-pip install yasiu.visualisation
+pip install yasiu-vis
 ```
 
 ## Sequence reader Generators
 
 - `summary_plot` - plot dataframe, possible grouping by columns
 
-### Import:
-
-```py
-from yasiu_vis.visualisation import summary_plot
-```
-
 ### Use example:
 
 ```py
+from yasiu_vis.visualisation import summary_plot
+
+
+# df: pandas.DataFrame
+
 summary_plot(df)
 summary_plot(df, group="column-name")
 summary_plot(df, group="column-name", split_widnow="column")
@@ -28,7 +27,7 @@ summary_plot(df, group="column-name", split_widnow="column")
 
 # All packages
 
-[1. Time Package](https://pypi.org/project/yasiu-time/)
+[1. Native Package](https://pypi.org/project/yasiu-native/)
 
 [2. Math Package](https://pypi.org/project/yasiu-math/)
 

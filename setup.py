@@ -3,7 +3,7 @@ from yasiu_vis import VERSION
 
 
 project_urls = {
-        "1. Time Package": "https://pypi.org/project/yasiu-time/",
+        "1. Native Package": "https://pypi.org/project/yasiu-native/",
         "2. Math Package": "https://pypi.org/project/yasiu-math/",
         "3. Image Package": "https://pypi.org/project/yasiu-image/",
         "4. Visualisation Package": "https://pypi.org/project/yasiu-vis/",

@@ -446,6 +446,6 @@ if __name__ == "__main__":
             # group_key='class',
             group_key='col-A',
             # split_windows='column',
-            split_windows='group',
+            # split_windows='group',
             plot_params=dict(alpha=0.7)
     )
