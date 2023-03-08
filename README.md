@@ -15,7 +15,7 @@ pip install yasiu-vis
 ### Use example:
 
 ```py
-from yasiu_vis.visualisation import summary_plot
+from yasiu_vis.pandas import summary_plot
 
 
 # df: pandas.DataFrame
@@ -25,6 +25,15 @@ summary_plot(df, group="column-name")
 summary_plot(df, group="column-name", split_widnow="column")
 ```
 
+```py
+from yasiu_vis.keras import plotLayersWeights
+from matpotlib import pyplot as plt
+import keras
+
+model : keras.models.Sequential
+plotLayersWeights(model.layers)
+plt.show()
+```
 # All packages
 
 [1. Native Package](https://pypi.org/project/yasiu-native/)
@@ -33,5 +42,5 @@ summary_plot(df, group="column-name", split_widnow="column")
 
 [3. Image Package](https://pypi.org/project/yasiu-image/)
 
-[4. Pyplot visualisation Package](https://pypi.org/project/yasiu-vis/)
+[4. Visualisation Package](https://pypi.org/project/yasiu-vis/)
 

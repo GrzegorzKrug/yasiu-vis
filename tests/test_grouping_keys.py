@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from yasiu_vis.visualisation import cluster_keys
+from yasiu_vis.Ypandas import cluster_keys
 
 
 @pytest.fixture()
@@ -22,7 +22,8 @@ def test_1_return_size(letters_list, max_keys):
 def test_1b_return_expected_groups(letters_list, max_keys):
     """"""
     ret = cluster_keys(letters_list, max_groups=max_keys)
-    assert len(ret) == max_keys, f"Expected group size does not match, {len(ret)} != {max_keys}"
+    assert len(
+        ret) == max_keys, f"Expected group size does not match, {len(ret)} != {max_keys}"
 
 
 @pytest.mark.parametrize("max_keys", list(range(1, 20)))
@@ -51,7 +52,8 @@ def test_3_no_duplicates(letters_list, max_keys):
         for key, value in ret.items():
             if letter in value:
                 if found:
-                    raise ValueError(f"Found duplicated key `{letter}` in output dict: {ret}")
+                    raise ValueError(
+                        f"Found duplicated key `{letter}` in output dict: {ret}")
                 else:
                     found = True
 
@@ -65,7 +67,8 @@ def test_4_quality_distribution(letters_list, max_keys):
     high = np.round(desired) + 1
 
     for key, val in ret.items():
-        assert low <= len(val) <= high, f"Should be withing range {low} <= {len(val)} <= {high}"
+        assert low <= len(
+            val) <= high, f"Should be withing range {low} <= {len(val)} <= {high}"
 
 
 @pytest.mark.parametrize("max_keys", list(range(1, 30)))
@@ -82,4 +85,5 @@ def test_6_single_element_groups(letters_list, max_keys):
     """Too many centers, more than max_groups"""
 
     ret = cluster_keys(letters_list, max_groups=max_keys)
-    assert len(letters_list) == len(ret), "Each keys should have separated group"
+    assert len(letters_list) == len(
+        ret), "Each keys should have separated group"
