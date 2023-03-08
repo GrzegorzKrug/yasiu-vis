@@ -31,17 +31,21 @@ def test_first(short_data_frame):
 os.makedirs("test_pics", exist_ok=True)
 
 data_1 = [
-        (cols, cls_n)
-        for cols in range(1, 20, 3)
-        for cls_n in range(1, 20)
+        (cols, cls_n, loc)
+        for cols in [1, 2, 4, 16, 17, 25]
+        for cls_n in range(5, 15, 5)
+        for loc in ['same', 'subplot']
 ]
 
 
-@pytest.mark.parametrize("cols_n,cls_n", data_1)
-def test_2_varying_data(cols_n, cls_n):
+@pytest.mark.parametrize("cols_n,cls_n,leg_loc", data_1)
+def test_2_varying_data(cols_n, cls_n, leg_loc):
     data = random_data_frame(100, cols_n, cls_n)
-    summary_plot(data, group_key='class', show=False)
-    plt.savefig(f"test_pics{os.path.sep}test_2_col{cols_n}_cl{cls_n}.png")
+    summary_plot(
+            data, group_key='class', show=False,
+            legend_place=leg_loc,
+    )
+    plt.savefig(f"test_pics{os.path.sep}test_2_col{cols_n}_cl{cls_n}-{leg_loc}.png")
     plt.close("all")
 
 

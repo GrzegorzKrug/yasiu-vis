@@ -9,9 +9,6 @@ from matplotlib.lines import Line2D
 from yasiu_math.math import round_number
 
 
-# import yasiu.math
-
-
 def get_grid_dims(size):
     if size <= 0:
         return 0, 0
@@ -39,9 +36,10 @@ def summary_plot(
         figure_params=None, plot_params=None,
         grid=True, logy=False, logx=False,
         split_windows='None', show=True,
-
+        legend_place='same',
 ):
     """
+    Creates new figure and plots data.
 
     Args:
         data_df: pdf DataFrame
@@ -56,6 +54,12 @@ def summary_plot(
             column - new window for each column
             category - same as column
         show: bool, flag which calls `pyplot.show`
+        legend_place:
+
+    :param legend_place: str - position of the legend
+     same - last subplot
+     subplot - new subplot just for legend
+     external - new window for legend
 
 
     Returns:
@@ -75,6 +79,7 @@ def summary_plot(
 
     if 'figsize' not in figure_params:
         figure_params['figsize'] = 10, 7
+
     if 'dpi' not in figure_params:
         figure_params['dpi'] = 100
 
@@ -84,6 +89,9 @@ def summary_plot(
         assert isinstance(
                 plot_params,
                 dict), f"Plot params must be dict type! but got: {type(plot_params)}"
+
+    if 'alpha' not in plot_params:
+        plot_params['alpha'] = 0.6
 
     """
     SPLIT
@@ -106,6 +114,9 @@ def summary_plot(
     if group_key is not None:
         "Group data"
         group_dict = get_dataframe_groups(data_df, group_key=group_key, max_groups=max_groups)
+
+        if legend_place == 'same':
+            total_columns -= 1
 
         if split_windows in ['column', 'category']:
             plot_rows, plot_cols = get_grid_dims(len(group_dict))
@@ -151,15 +162,27 @@ def summary_plot(
             else:
                 "No slip, stacked images"
                 "Put legend as group"
-                plt.subplot(plot_rows, plot_cols, total_columns)
-                plt.axis('off')
-                plt.tight_layout()
+                # plt.subplot(plot_rows, plot_cols, total_columns)
+                # plt.axis('off')
+                # plt.tight_layout()
 
         if split_windows not in ['column', 'category', 'group']:
             plt.tight_layout()
-            plt.subplot(plot_rows, plot_cols, total_columns)
-            _create_legend(list(group_dict.keys()))
-            plt.axis('off')
+            if legend_place == 'subplot':
+                plt.subplot(plot_rows, plot_cols, total_columns)
+                _create_legend(list(group_dict.keys()))
+                plt.axis('off')
+
+            elif legend_place == 'same':
+                plt.subplot(plot_rows, plot_cols, total_columns)
+                _create_legend(list(group_dict.keys()))
+
+            elif legend_place == 'external':
+                plt.figure()
+                _create_legend(list(group_dict.keys()))
+                plt.axis('off')
+            else:
+                raise KeyError(f"Unsupported legend place: {legend_place}")
             # plt.tight_layout()
 
         if figure_list:
@@ -415,7 +438,7 @@ def _draw_plot(data, plot_params):
     plt.plot(data, **plot_params)
 
 
-__all__ = ["shrink_array_to_string", "summary_plot", "get_grid_dims"]
+__all__ = ["shrink_array_to_string", "summary_plot", "get_grid_dims", "iterate_split_plot"]
 
 
 def random_data_frame(rows_n=100, columns_N=10, classes_N=5):
