@@ -15,7 +15,7 @@ pip install yasiu-vis
 ### Use example:
 
 ```py
-from yasiu_vis.visualisation import summary_plot
+from yasiu_vis.pandas import summary_plot
 
 
 # df: pandas.DataFrame
@@ -33,5 +33,5 @@ summary_plot(df, group="column-name", split_widnow="column")
 
 [3. Image Package](https://pypi.org/project/yasiu-image/)
 
-[4. Pyplot visualisation Package](https://pypi.org/project/yasiu-vis/)
+[4. Visualisation Package](https://pypi.org/project/yasiu-vis/)
 
