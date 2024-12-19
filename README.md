@@ -25,6 +25,15 @@ summary_plot(df, group="column-name")
 summary_plot(df, group="column-name", split_widnow="column")
 ```
 
+```py
+from yasiu_vis.keras import plotLayersWeights
+from matpotlib import pyplot as plt
+import keras
+
+model : keras.models.Sequential
+plotLayersWeights(model.layers)
+plt.show()
+```
 # All packages
 
 [1. Native Package](https://pypi.org/project/yasiu-native/)
