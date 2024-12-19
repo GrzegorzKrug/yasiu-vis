@@ -74,8 +74,8 @@ def summary_plot(
         figure_params = dict()
     else:
         assert isinstance(
-                figure_params,
-                dict), f"Figure params must be dict type! but got: {type(figure_params)}"
+            figure_params,
+            dict), f"Figure params must be dict type! but got: {type(figure_params)}"
 
     if 'figsize' not in figure_params:
         figure_params['figsize'] = 10, 7
@@ -87,8 +87,8 @@ def summary_plot(
         plot_params = dict()
     else:
         assert isinstance(
-                plot_params,
-                dict), f"Plot params must be dict type! but got: {type(plot_params)}"
+            plot_params,
+            dict), f"Plot params must be dict type! but got: {type(plot_params)}"
 
     if 'alpha' not in plot_params:
         plot_params['alpha'] = 0.6
@@ -100,9 +100,11 @@ def summary_plot(
     """
     if split_windows in ['column', 'category']:
         if group_key is not None:
-            figure_list = [plt.figure(**figure_params) for _ in range(total_columns - 1)]
+            figure_list = [plt.figure(**figure_params)
+                           for _ in range(total_columns - 1)]
         else:
-            figure_list = [plt.figure(**figure_params) for _ in range(total_columns)]
+            figure_list = [plt.figure(**figure_params)
+                           for _ in range(total_columns)]
 
     elif split_windows in ['group']:
         figure_list = []
@@ -113,7 +115,8 @@ def summary_plot(
 
     if group_key is not None:
         "Group data"
-        group_dict = get_dataframe_groups(data_df, group_key=group_key, max_groups=max_groups)
+        group_dict = get_dataframe_groups(
+            data_df, group_key=group_key, max_groups=max_groups)
 
         if legend_place == 'same':
             total_columns -= 1
@@ -142,12 +145,12 @@ def summary_plot(
                 figures_for_column = None
 
             iterate_split_plot(
-                    value, plot_rows, plot_cols,
-                    grid=grid, plot_params=plot_params,
-                    logy=logy, logx=logx,
-                    figure_list=figures_for_column,
-                    subplot_ind=ind + 1,
-                    title=title,
+                value, plot_rows, plot_cols,
+                grid=grid, plot_params=plot_params,
+                logy=logy, logx=logx,
+                figure_list=figures_for_column,
+                subplot_ind=ind + 1,
+                title=title,
             )
 
             if split_windows in ['column', 'category']:
@@ -199,7 +202,8 @@ def summary_plot(
             plot_rows, plot_cols = 1, 1
             subplot_ind = 1
         elif split_windows == 'group':
-            raise KeyError("Windows splitting: `group` not available without grouping")
+            raise KeyError(
+                "Windows splitting: `group` not available without grouping")
 
         else:
             plot_rows, plot_cols = get_grid_dims(total_columns)
@@ -207,9 +211,9 @@ def summary_plot(
             subplot_ind = None
 
         iterate_split_plot(
-                data_df, plot_rows, plot_cols, grid, plot_params,
-                logy=logy, logx=logx, figure_list=figure_list,
-                subplot_ind=subplot_ind,
+            data_df, plot_rows, plot_cols, grid, plot_params,
+            logy=logy, logx=logx, figure_list=figure_list,
+            subplot_ind=subplot_ind,
         )
         # plt.subplots_adjust(hspace=def_hspace)
         plt.tight_layout()
@@ -259,7 +263,8 @@ def iterate_split_plot(
 
     """
     if figure_list is not None:
-        assert len(figure_list) == data_df.shape[1], f"{len(figure_list)}, {data_df.shape[1]}"
+        assert len(
+            figure_list) == data_df.shape[1], f"{len(figure_list)}, {data_df.shape[1]}"
 
     for col_ind, (name, value) in enumerate(data_df.items()):
         if figure_list is not None:
@@ -373,11 +378,11 @@ def cluster_keys(keys, max_groups=10, numeric_keys_rounding=5):
 
             output_dict[key] = select
 
-
     else:
         for k in keys:
             if is_numeric:
-                this_num_str = str(round_number(k, round=numeric_keys_rounding))
+                this_num_str = str(round_number(
+                    k, round=numeric_keys_rounding))
                 output_dict[this_num_str] = [k]
             else:
                 output_dict[k] = [k]
@@ -404,9 +409,9 @@ def shrink_array_to_string(arr, max_size=20, rounding=5, ignore_minimal_size_err
     size_left = max_size - len(first) - len(last)
     if size_left < 0 and not ignore_minimal_size_error:
         raise ValueError(
-                f"Two edge values will exceed minimal required size: `{arr}`, "
-                f"First:`{first}`, last:`{last}`, "
-                f"Two words size: {len(first) + len(last)}, but got space: {max_size}")
+            f"Two edge values will exceed minimal required size: `{arr}`, "
+            f"First:`{first}`, last:`{last}`, "
+            f"Two words size: {len(first) + len(last)}, but got space: {max_size}")
 
     middle = ""
 
@@ -438,23 +443,25 @@ def _draw_plot(data, plot_params):
     plt.plot(data, **plot_params)
 
 
-__all__ = ["shrink_array_to_string", "summary_plot", "get_grid_dims", "iterate_split_plot"]
+__all__ = ["shrink_array_to_string", "summary_plot",
+           "get_grid_dims", "iterate_split_plot"]
 
 
 def random_data_frame(rows_n=100, columns_N=10, classes_N=5):
     columns = [f"col-{chr(num + 65)}" for num in range(columns_N)]
     columns += ['class']
-    # col_N += 1
+    print("columns:")
+    print(columns)
 
     df = pd.DataFrame(columns=columns)
     for ind in range(rows_n):
-        # ind = len(df)
-        rnd = np.random.random(columns_N)
-        df.loc[ind, :columns_N] = rnd
-        # print(df)
+        
+        "Random Numbers"
+        rnd = np.random.random(columns_N+1)
+        df.loc[ind] = rnd
 
+        "Random Classes"
         cls = np.random.randint(0, classes_N)
-
         df.iloc[ind, columns_N] = cls
 
     return df
@@ -464,11 +471,11 @@ if __name__ == "__main__":
     df = random_data_frame(150, columns_N=10, classes_N=8)
 
     print(df)
-    summary_plot(
-            df,
-            # group_key='class',
-            group_key='col-A',
-            # split_windows='column',
-            # split_windows='group',
-            plot_params=dict(alpha=0.7)
-    )
+    # summary_plot(
+    #         df,
+    #         # group_key='class',
+    #         group_key='col-A',
+    #         # split_windows='column',
+    #         # split_windows='group',
+    #         plot_params=dict(alpha=0.7)
+    # )
