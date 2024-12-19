@@ -3,7 +3,6 @@ name: Publish Python Package
 on:
   push:
     tags:
-      tags:
       - 'v*'
       - 'V*'
 
