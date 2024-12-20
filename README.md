@@ -2,20 +2,18 @@
 
 High level functions, to quickly visualise data frames.
 
-## Installation
+# Installation
 
 ```shell
 pip install yasiu-vis
 ```
-## Package Contains
+# Package Contains
 - ykeras : Visualisation made for keras.Model
 - ypandas: Visualisation made for pandas.DataFrame
 
-### 
+# Examples
 
-- `summary_plot` - plot dataframe, possible grouping by columns
-
-#### Use example:
+## Pandas - Drawing data frame
 
 ```py
 from yasiu_vis.Ypandas import summary_plot
@@ -27,9 +25,9 @@ summary_plot(df)
 summary_plot(df, group="column-name")
 summary_plot(df, group="column-name", split_widnow="column")
 ```
-#### Example dataframe
 ![Summary Plot](./pics/summaryPlot.png)
 
+## Keras - Nerual Network layers
 ```py
 from yasiu_vis.ykeras import plotLayersWeights
 from matpotlib import pyplot as plt
@@ -41,11 +39,9 @@ plotLayersWeights(model.layers)
 plt.subplots_adjuts(wspace=0.1, top=0.95)
 # Adjust values per model and plot size
 plt.tight_layout()
-# fit to figure
+# use all space in figure
 plt.show()
 ```
-
-#### Example drawing
 
 ![Keras Weights](./pics/kerasLayers.png)
 
