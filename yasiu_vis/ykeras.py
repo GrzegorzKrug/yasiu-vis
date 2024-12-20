@@ -7,20 +7,33 @@ from matplotlib.colors import Normalize as _Normalize
 def plotLayersWeights(
     layers, innerCanvas=2, midScale=0.8,
         numFmt=">4.2f",
-        figsize=(40, 30), dpi=100,
+        figsize=(40, 30), dpi=70,
         drawVertical=False, separateFirstLast=True,
         normalizeValues=False,
 ):
     """
     Draws layers weights onto matplotlib figure.
+
     innerCanvas: rows/columns for hidden layers.
+
     numFmt: number formatter
+
+    figsize: tuple of ints, passed to pyplot.figure(figsize=figsize)
+
+    dpi: integer, default=70, passed to pyplot.figure(dpi=dpi)
+
     drawVertical: stack layers in vertical or horizontal direction
+
     separateFirstLast: draw first last layer independent from hidden layers
+
     normalizeValues: Use normalization for color map per ax <min ,max>
+
     """
     if not isinstance(layers, (list,)):
         layers = [layers]
+
+    if innerCanvas == 1:
+        separateFirstLast = False
 
     canvasSizes = []
     if len(layers) > 2:
@@ -99,8 +112,6 @@ def plotLayersWeights(
             ax_last = fig.add_subplot(grid[0, -1])
         all_axes.append(ax_last)
 
-    # print(f"All axes: {len(all_axes)}")
-    # print(f"All Layer: {len(layers)}")
     if normalizeValues:
         "Allow matplotlib to normalize values"
         my_norm = None
@@ -175,24 +186,30 @@ __all__ = [
 ]
 
 if __name__ == "__main__":
-    inputSize = 2
+    inputSize = 4
 
-    import yasiu_vis.Ykeras as Ykeras
+    import keras
 
-    model = Ykeras.models.Sequential()
-    model.add(Ykeras.Input(shape=(inputSize,)))
-    model.add(Ykeras.layers.Dense(30, activation="leaky_relu"))
-    model.add(Ykeras.layers.Dense(30, activation="leaky_relu"))
-    model.add(Ykeras.layers.Dense(30, activation="leaky_relu"))
-    model.add(Ykeras.layers.Dense(21, activation="leaky_relu"))
+    model = keras.models.Sequential()
+    model.add(keras.Input(shape=(inputSize,)))
+    model.add(keras.layers.Dense(20, activation="leaky_relu"))
+    model.add(keras.layers.Dense(10, activation="leaky_relu"))
     # model.add(keras.layers.Dense(10, activation="leaky_relu"))
     # model.add(keras.layers.Dense(10, activation="leaky_relu"))
     # model.add(keras.layers.Dense(10, activation="leaky_relu"))
-    model.add(Ykeras.layers.Dense(10, activation="leaky_relu"))
-    model.add(Ykeras.layers.Dense(1, activation="linear"))
+    model.add(keras.layers.Dense(10, activation="leaky_relu"))
+    model.add(keras.layers.Dense(2, activation="linear"))
 
-    optim = Ykeras.optimizers.Adam(learning_rate=0.0004)
+    optim = keras.optimizers.Adam(learning_rate=0.001)
     model.compile(loss="mse", optimizer=optim)
 
-    plotLayersWeights(model.layers, innerCanvas=2, figsize=(42, 25), dpi=70)
+    X = _np.random.random((1000, 4))
+    Y = X[:, :2] + X[:, 2:]
+
+    model.fit(X, Y, epochs=100)
+
+    plotLayersWeights(model.layers, innerCanvas=1, figsize=(20, 15), dpi=70)
+    _plt.suptitle("Sequnetial model with dense layers", size=20)
+    _plt.subplots_adjust(wspace=0.12, top=0.93)
+    _plt.tight_layout()
     _plt.savefig("temp.png")

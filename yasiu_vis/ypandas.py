@@ -35,32 +35,46 @@ def summary_plot(
         data_df, group_key=None, max_groups=9,
         figure_params=None, plot_params=None,
         grid=True, logy=False, logx=False,
-        split_windows='None', show=True,
-        legend_place='same',
+        split_windows='None', show=False,
+        legend_place='subplot',
 ):
     """
     Creates new figure and plots data.
 
     Args:
         data_df: pdf DataFrame
+
         group_key: column name, for grouping
+
         figure_params: dict used to initialize pyplot.Figure
+
         plot_params: dict used to affect plot params.
+
         grid: bool,
+
         logy: bool, Y axis log scaling
+
         logx: bool, X axis log scaling
+
         split_windows: string
+
             group - new window for each category
+
             column - new window for each column
+
             category - same as column
+
         show: bool, flag which calls `pyplot.show`
+
         legend_place:
 
-    :param legend_place: str - position of the legend
-     same - last subplot
-     subplot - new subplot just for legend
-     external - new window for legend
+        :param legend_place: str - position of the legend
 
+        same - last subplot
+
+        subplot - new subplot just for legend
+
+        external - new window for legend
 
     Returns:
 
@@ -160,14 +174,12 @@ def summary_plot(
 
             elif split_windows == 'group':
                 # _create_legend(list(group_dict.keys()))
-                plt.suptitle(f"{group_name}")
+                plt.suptitle(f"Values in group '{group_name}'")
 
             else:
                 "No slip, stacked images"
                 "Put legend as group"
-                # plt.subplot(plot_rows, plot_cols, total_columns)
-                # plt.axis('off')
-                # plt.tight_layout()
+                plt.suptitle(f"Grouping by '{group_key}'")
 
         if split_windows not in ['column', 'category', 'group']:
             plt.tight_layout()
@@ -194,7 +206,7 @@ def summary_plot(
                 plt.figure(figure.number)
                 plt.tight_layout()
                 if split_windows in ['column', 'category']:
-                    plt.suptitle(columns[ind])
+                    plt.suptitle(f"Values of '{columns[ind]}' per grouping")
 
     else:
         if split_windows in ['column', 'category']:
@@ -242,7 +254,7 @@ def _create_legend(names_list, size=10):
 
 def iterate_split_plot(
         data_df, plot_rows, plot_cols, grid, plot_params, logx=False, logy=False,
-        figure_list=None, subplot_ind=None, title=None,
+        figure_list=None, subplot_ind=None, title=None, suptitle=None,
 ):
     """
     Plot every column separately
@@ -281,6 +293,9 @@ def iterate_split_plot(
             plt.title(title)
         else:
             plt.title(name)
+
+        if suptitle is not None:
+            plt.suptitle(suptitle)
 
         if grid:
             plt.grid(True)
@@ -455,7 +470,7 @@ def random_data_frame(rows_n=100, columns_N=10, classes_N=5):
 
     df = pd.DataFrame(columns=columns)
     for ind in range(rows_n):
-        
+
         "Random Numbers"
         rnd = np.random.random(columns_N+1)
         df.loc[ind] = rnd
@@ -468,14 +483,28 @@ def random_data_frame(rows_n=100, columns_N=10, classes_N=5):
 
 
 if __name__ == "__main__":
-    df = random_data_frame(150, columns_N=10, classes_N=8)
+    import os
 
-    print(df)
-    # summary_plot(
-    #         df,
-    #         # group_key='class',
-    #         group_key='col-A',
-    #         # split_windows='column',
-    #         # split_windows='group',
-    #         plot_params=dict(alpha=0.7)
-    # )
+    # df = random_data_frame(150, columns_N=10, classes_N=8)
+    from sklearn.datasets import load_iris
+    iris = load_iris()
+    df = pd.DataFrame(
+        data=iris.data,
+        columns=iris.feature_names
+    )
+    # print(df)
+    print(df.head)
+    summary_plot(
+        df,
+        # group_key='class',
+        group_key='petal width (cm)',
+        # split_windows='column',
+        # split_windows='group',
+        max_groups=4,
+        plot_params=dict(alpha=0.7),
+        legend_place='subplot'
+    )
+    plt.suptitle("Iris dataset. Grouping by 'petal width'. 4 Groups")
+    plt.savefig(os.path.join(os.path.dirname(__file__),
+                "..", "pics", "summaryPlot.png"))
+    # plt.show()

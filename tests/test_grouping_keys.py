@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from yasiu_vis.Ypandas import cluster_keys
+from yasiu_vis.ypandas import cluster_keys
 
 
 @pytest.fixture()

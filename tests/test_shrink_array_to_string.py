@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from yasiu_vis.Ypandas import shrink_array_to_string
+from yasiu_vis.ypandas import shrink_array_to_string
 
 
 def test_1():

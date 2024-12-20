@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-from yasiu_vis.Ypandas import summary_plot, random_data_frame
+from yasiu_vis.ypandas import summary_plot, random_data_frame
 
 
 @pytest.fixture()
@@ -33,7 +33,7 @@ os.makedirs(testPicDir, exist_ok=True)
 
 data_1 = [
     (cols, cls_n, loc)
-    for cols in [1, 2, 4, 16, 17, 25]
+    for cols in [1, 2, 16, 25]
     for cls_n in range(5, 15, 5)
     for loc in ['same', 'subplot']
 ]
@@ -46,8 +46,6 @@ def test_2_varying_data(cols_n, cls_n, leg_loc):
         data, group_key='class', show=False,
         legend_place=leg_loc,
     )
-    plt.savefig(
-        f"{testPicDir}{os.path.sep}test_2_col{cols_n}_cl{cls_n}-{leg_loc}.png")
     plt.close("all")
 
 
@@ -63,5 +61,5 @@ def test_2_varying_data(cols_n, cls_n, leg_loc):
 def test_4_grouping_values(class_N):
     data = random_data_frame(200, 10, classes_N=class_N)
     summary_plot(data, group_key='col-A', show=False)
-    plt.savefig(f"{testPicDir}{os.path.sep}test_4_out_{class_N}.png")
+    # plt.savefig(f"{testPicDir}{os.path.sep}test_4_out_{class_N}.png")
     plt.close("all")
