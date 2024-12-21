@@ -16,14 +16,17 @@ pip install yasiu-vis
 ## Pandas - Drawing data frame
 
 ```py
-from yasiu_vis.Ypandas import summary_plot
+from yasiu_vis.ypandas import summary_plot
 
 
 # df: pandas.DataFrame
 
 summary_plot(df)
 summary_plot(df, group="column-name")
-summary_plot(df, group="column-name", split_widnow="column")
+summary_plot(
+    df, group_key='petal width (cm)', max_groups=4,
+    plot_params=dict(alpha=0.7), legend_place='subplot'
+)
 ```
 ![Summary Plot](./pics/summaryPlot.png)
 
@@ -35,7 +38,7 @@ import keras
 
 model : keras.models.Sequential # Keras compiled model
 
-plotLayersWeights(model.layers)
+plotLayersWeights(model.layers, innerCanvas=1, figsize=(20, 15), dpi=70)
 plt.subplots_adjuts(wspace=0.1, top=0.95)
 # Adjust values per model and plot size
 plt.tight_layout()
