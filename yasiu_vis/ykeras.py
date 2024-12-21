@@ -19,9 +19,9 @@ def plotLayersWeights(
 
     numFmt: number formatter (omit when using `scaleFractions`)
 
-    figsize: tuple of ints, passed to pyplot.figure(figsize=figsize)
+    figsize: `tuple` of `int`s, passed to `pyplot.figure(figsize=figsize)`
 
-    dpi: integer, default=70, passed to pyplot.figure(dpi=dpi)
+    dpi: integer, default=70, passed to `pyplot.figure(dpi=dpi)`
 
     drawVertical: stack layers in vertical or horizontal direction
 
@@ -29,7 +29,8 @@ def plotLayersWeights(
 
     normalizeColors: Plot each layer in range of indiviudal values <min ,max>
 
-    scaleWeights`: int/float: multiply weights and draw rounded integers instad. Use 100 or 1000. (Less clutter on plot)
+    scaleWeights: `int`/`float`: multiply weights and draw rounded integers instad.
+        Use 100 or 1000. (Less clutter on plot)
 
     """
     if not isinstance(layers, (list,)):
