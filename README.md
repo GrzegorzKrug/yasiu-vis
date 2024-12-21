@@ -8,8 +8,8 @@ High level functions, to quickly visualise data frames.
 pip install yasiu-vis
 ```
 # Package Contains
-- ykeras : Visualisation made for keras.Model
-- ypandas: Visualisation made for pandas.DataFrame
+- **ykeras**: Visualisation made for keras.Model
+- **ypandas**: Visualisation made for pandas.DataFrame
 
 # Examples
 
@@ -30,7 +30,7 @@ summary_plot(
 ```
 ![Summary Plot](./pics/summaryPlot.png)
 
-## Keras - Nerual Network layers
+## Keras - Ploting Neural Network layers
 ```py
 from yasiu_vis.ykeras import plotLayersWeights
 from matpotlib import pyplot as plt
@@ -38,7 +38,7 @@ import keras
 
 model : keras.models.Sequential # Keras compiled model
 
-plotLayersWeights(model.layers, innerCanvas=1, figsize=(20, 15), dpi=70)
+plotLayersWeights(model.layers, innerCanvas=1, figsize=(20, 15), dpi=70, scaleWeights=1000)
 plt.subplots_adjuts(wspace=0.1, top=0.95)
 # Adjust values per model and plot size
 plt.tight_layout()

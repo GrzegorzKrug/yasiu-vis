@@ -9,14 +9,15 @@ def plotLayersWeights(
         numFmt=">4.2f",
         figsize=(40, 30), dpi=70,
         drawVertical=False, separateFirstLast=True,
-        normalizeValues=False,
+        normalizeColors=False,
+        scaleWeights=None,
 ):
     """
     Draws layers weights onto matplotlib figure.
 
     innerCanvas: rows/columns for hidden layers.
 
-    numFmt: number formatter
+    numFmt: number formatter (omit when using `scaleFractions`)
 
     figsize: tuple of ints, passed to pyplot.figure(figsize=figsize)
 
@@ -26,7 +27,9 @@ def plotLayersWeights(
 
     separateFirstLast: draw first last layer independent from hidden layers
 
-    normalizeValues: Use normalization for color map per ax <min ,max>
+    normalizeColors: Plot each layer in range of indiviudal values <min ,max>
+
+    scaleWeights`: int/float: multiply weights and draw rounded integers instad. Use 100 or 1000. (Less clutter on plot)
 
     """
     if not isinstance(layers, (list,)):
@@ -112,7 +115,7 @@ def plotLayersWeights(
             ax_last = fig.add_subplot(grid[0, -1])
         all_axes.append(ax_last)
 
-    if normalizeValues:
+    if normalizeColors:
         "Allow matplotlib to normalize values"
         my_norm = None
     else:
@@ -153,22 +156,34 @@ def plotLayersWeights(
 
         ax.matshow(combined_visualization, cmap="viridis", norm=my_norm)
 
+        if type(scaleWeights) in [int, float]:
+            "Vectorized scaling"
+            combined_visualization = (
+                combined_visualization*scaleWeights).round().astype(int)
+
         for (i, j), val in _np.ndenumerate(combined_visualization):
-            ax.text(j, i, f"{val:{numFmt}}", ha='center',
-                    va='center', color='white', fontsize=10)
+            if type(scaleWeights) in [int, float]:
+                numText = str(val)
+            else:
+                numText = f"{val:{numFmt}}"
+
+            ax.text(
+                j, i, numText, ha='center',
+                va='center', color='white', fontsize=10
+            )
 
         if is_bias_onRight:
             ticks = ax.get_xticks()[1:-1]
-            tick_strings = [f"W_{int(val)}" for val in ticks]
+            tick_strings = [f"$W_{'{'}{int(val)}{'}'}$" for val in ticks]
             tick_strings[-1] = "Bias"
-            ax.set_xticks(ticks, tick_strings)
+            ax.set_xticks(ticks, tick_strings, rotation=15)
             ax.set_ylabel("Nodes")
 
         else:
             ticks = ax.get_yticks()[1:-1]
-            tick_strings = [f"W_{int(val)}" for val in ticks]
+            tick_strings = [f"$W_{'{'}{int(val)}{'}'}$" for val in ticks]
             tick_strings[-1] = "Bias"
-            ax.set_yticks(ticks, tick_strings)
+            ax.set_yticks(ticks, tick_strings, rotation=40)
             ax.set_xlabel("Nodes")
 
         ax.set_title(f" Layer: {lind} ({lay.name})")
@@ -189,6 +204,7 @@ if __name__ == "__main__":
     inputSize = 4
 
     import keras
+    import os
 
     model = keras.models.Sequential()
     model.add(keras.Input(shape=(inputSize,)))
@@ -206,10 +222,17 @@ if __name__ == "__main__":
     X = _np.random.random((1000, 4))
     Y = X[:, :2] + X[:, 2:]
 
-    model.fit(X, Y, epochs=100)
+    model.fit(X, Y, epochs=20)
 
-    plotLayersWeights(model.layers, innerCanvas=1, figsize=(20, 15), dpi=70)
-    _plt.suptitle("Sequnetial model with dense layers", size=20)
+    plotLayersWeights(
+        model.layers, innerCanvas=1,
+        figsize=(15, 12), dpi=80, scaleWeights=1000
+    )
+
+    _plt.suptitle(
+        "Sequnetial model with dense layers. Weights are scaled for readability", size=20)
     _plt.subplots_adjust(wspace=0.12, top=0.93)
     _plt.tight_layout()
-    _plt.savefig("temp.png")
+    picPath = os.path.join(os.path.dirname(__file__),
+                           "..", "pics", "kerasLayers.png")
+    _plt.savefig(f"{picPath}")
