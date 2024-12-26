@@ -40,9 +40,6 @@ model : keras.models.Sequential # Keras compiled model
 
 plotLayersWeights(model.layers, innerCanvas=1, figsize=(20, 15), dpi=70, scaleWeights=1000)
 plt.suptitle("Sequnetial model with dense layers. Weights are scaled for readability", size=20)
-# Adjust values per model and plot size
-plt.tight_layout()
-# use all space in figure
 plt.show()
 ```
 
