@@ -39,6 +39,7 @@ keywords = [
     "pyplot",
     "visualisation",
     "dataframe",
+    "keras",
 ]
 
 author = "Grzegorz Krug"
@@ -52,7 +53,7 @@ with open(readme_path, "rt") as file:
 
 python_requires = '>=3.7'
 install_requires = [
-    "pandas", "matplotlib", "yasiu-math"
+    "pandas", "matplotlib", "yasiu-math", "numpy"
 ]
 
 setup(
@@ -77,6 +78,11 @@ setup(
     install_requires=install_requires,
     # setup_requires=install_requires,
     package_dir={
-            'yasiu_vis': 'yasiu_vis',
-    }
+        'yasiu_vis': 'yasiu_vis',
+    },
+
+    # extras_require={
+    #     'keras': ['keras'],
+    #     'all': ['keras']
+    # }
 )

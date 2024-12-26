@@ -2,69 +2,78 @@ import matplotlib.pyplot as _plt
 import numpy as _np
 # from matplotlib.cm import get_cmap as _get_cmap
 from matplotlib.colors import Normalize as _Normalize
+from keras.models import Model as _Model
 
 
 def plotLayersWeights(
-    layers, innerCanvas=2, midScale=0.8,
-        numFmt=">4.2f",
-        figsize=(40, 30), dpi=70,
-        drawVertical=False, separateFirstLast=True,
-        normalizeColors=False,
-        scaleWeights=None,
+    layers, innerCanvas=1, midScale=0.8,
+    numFmt=">4.2f",
+    figsize=(40, 30), dpi=70,
+    drawVertical=False,
+    separateFirstLast=True,
+    normalizeColors=False,
+    scaleWeights=None,
 ):
     """
     Draws layers weights onto matplotlib figure.
 
+    layers: keras `Model` or `list` of keras `Layers`
+
     innerCanvas: rows/columns for hidden layers.
 
-    numFmt: number formatter (omit when using `scaleFractions`)
+    midScale:Scales ratio for hidden layers when using `separateFirstLast` default 0.8
+
+    numFmt: number formatter (omited when using `scaleWeights`)
 
     figsize: `tuple` of `int`s, passed to `pyplot.figure(figsize=figsize)`
 
     dpi: integer, default=70, passed to `pyplot.figure(dpi=dpi)`
 
-    drawVertical: stack layers in vertical or horizontal direction
+    drawVertical: boolean, stack layers in vertical or horizontal direction
 
-    separateFirstLast: draw first last layer independent from hidden layers
+    separateFirstLast: boolean, draw first and last layer independent from hidden layers
 
-    normalizeColors: Plot each layer in range of indiviudal values <min ,max>
+    normalizeColors: boolean, Plot each layer in range of indiviudal values <min ,max>
 
-    scaleWeights: `int`/`float`: multiply weights and draw rounded integers instad.
-        Use 100 or 1000. (Less clutter on plot)
+    scaleWeights: `int` or `float`: multiply weights and draw rounded integers instad.
+        Use 100 or 1000. (Less clutter on plot). Default 0.
 
     """
-    if not isinstance(layers, (list,)):
+    if isinstance(layers, (_Model,)):
+        layers = layers.layers
+
+    elif not isinstance(layers, (list,)):
         layers = [layers]
 
     if innerCanvas == 1:
         separateFirstLast = False
 
     canvasSizes = []
-    if len(layers) > 2:
-        if separateFirstLast:
-            shapes = [lay.get_weights()[0].shape for lay in layers[1:-1]]
-        else:
-            shapes = [lay.get_weights()[0].shape for lay in layers]
-        # print("Shapes", shapes, len(shapes))
-        htemp = []
-        for i in range(len(shapes)):
-            if i % innerCanvas and innerCanvas > 1:
-                "Skip columnes other ahtn first"
-                continue
+    # if len(layers) > 2:
+    if separateFirstLast:
+        shapes = [lay.get_weights()[0].shape for lay in layers[1:-1]]
+    else:
+        shapes = [lay.get_weights()[0].shape for lay in layers]
 
-            if (i+innerCanvas) < len(shapes):
-                if innerCanvas <= 1:
-                    shape_scope = [shapes[i]]
-                else:
-                    shape_scope = shapes[i: i+innerCanvas-1]
-                sizes = [min(sh) for sh in shape_scope]
-                htemp.append(max(sizes) * midScale)
+    htemp = []
+    for i in range(len(shapes)):
+        if i % innerCanvas and innerCanvas > 1:
+            "Skip columnes other ahtn first"
+            continue
 
+        if (i+innerCanvas) < len(shapes):
+            if innerCanvas <= 1:
+                shape_scope = [shapes[i]]
             else:
-                # h1, w1 = shapes[i]
-                htemp.append(min(shapes[i]) * midScale)
+                shape_scope = shapes[i: i+innerCanvas-1]
+            sizes = [min(sh) for sh in shape_scope]
+            htemp.append(max(sizes) * midScale)
+
+        else:
+            # h1, w1 = shapes[i]
+            htemp.append(min(shapes[i]) * midScale)
         canvasSizes = htemp
-        del htemp
+    del htemp
 
     if separateFirstLast:
         canvasSizes = [
@@ -72,6 +81,8 @@ def plotLayersWeights(
             *canvasSizes,
             1.0
         ]
+    elif False:
+        pass
 
     canvasSizes = [c if c > 2.0 else 2.0 for c in canvasSizes]
     all_axes = []
@@ -226,7 +237,7 @@ if __name__ == "__main__":
     model.fit(X, Y, epochs=20)
 
     plotLayersWeights(
-        model.layers, innerCanvas=1,
+        model, innerCanvas=1,
         figsize=(15, 12), dpi=80, scaleWeights=1000
     )
 
