@@ -82,7 +82,6 @@ setup(
     },
 
     # extras_require={
-    #     'keras': ['keras'],
-    #     'all': ['keras']
+    #     'keras': ['keras', 'tensorflow'],
     # }
 )

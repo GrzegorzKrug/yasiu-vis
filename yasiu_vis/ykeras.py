@@ -201,11 +201,12 @@ def plotLayersWeights(
         ax.set_title(f" Layer: {lind} ({lay.name})")
         ax.grid(0)
 
-    _plt.tight_layout()
     if drawVertical:
         _plt.subplots_adjust(hspace=0.1, wspace=0.01,)
     else:
-        _plt.subplots_adjust(wspace=0.03, hspace=0.07,)
+        _plt.subplots_adjust(wspace=0.03, hspace=0.07)
+    _plt.tight_layout()
+    # _plt.subplots_adjust(wspace=0.03, hspace=0.07, right=0.8)
 
 
 __all__ = [
@@ -243,8 +244,8 @@ if __name__ == "__main__":
 
     _plt.suptitle(
         "Sequnetial model with dense layers. Weights are scaled for readability", size=20)
-    _plt.subplots_adjust(wspace=0.12, top=0.93)
-    _plt.tight_layout()
+    # _plt.subplots_adjust(wspace=0.12, top=0.93)
+    # _plt.tight_layout()
     picPath = os.path.join(os.path.dirname(__file__),
                            "..", "pics", "kerasLayers.png")
     _plt.savefig(f"{picPath}")
