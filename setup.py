@@ -1,5 +1,5 @@
 from setuptools import setup
-from yasiu_vis import VERSION
+from yasiu_vis import VERSION, DESCRIPTION
 
 
 project_urls = {
@@ -12,12 +12,14 @@ project_urls = {
 }
 
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3",
+    "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: Implementation :: CPython",
 
     "Topic :: Scientific/Engineering :: Mathematics",
@@ -34,18 +36,18 @@ classifiers = [
 
 keywords = [
     "numpy",
-    "pandas",
     "matplotlib",
-    "pyplot",
+    "pandas",
     "visualisation",
     "dataframe",
+    "pyplot",
     "keras",
+    "tensorflow",
 ]
 
 author = "Grzegorz Krug"
 author_email = "kruggrzegorz@gmail.com"
 
-description = "High level, simple data visualisation"
 readme_path = "README.md"
 
 with open(readme_path, "rt") as file:
@@ -66,7 +68,7 @@ setup(
 
     license='MIT',
 
-    description=description,
+    description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type='text/markdown',
     project_urls=project_urls,

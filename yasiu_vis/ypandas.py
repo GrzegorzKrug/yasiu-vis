@@ -8,6 +8,8 @@ from matplotlib.lines import Line2D as _Line2D
 
 from yasiu_math.math import round_number as _round_number
 
+import warnings as _warn
+
 
 def get_grid_dims(size):
     if size <= 0:
@@ -22,7 +24,7 @@ def get_grid_dims(size):
 
     while ((cols - 1) * rows) >= size:
         cols -= 1
-        print(cols)
+        # print(cols)
 
     return int(rows), int(cols)
 
@@ -32,52 +34,63 @@ def _draw_hist(data, plot_params):
 
 
 def summary_plot(
-        data_df, group_key=None, max_groups=9,
-        figure_params=None, plot_params=None,
-        grid=True, logy=False, logx=False,
-        split_windows='None', show=False,
-        legend_place='subplot',
+    data_df: _pd.DataFrame, group_key: str = None, max_groups: int = 9,
+    figure_params: dict = None, plot_params: dict = None, drawGrid=True,
+    logy: bool = False, logx: bool = False,
+    split_windows: str = 'None', legend_place: str = 'subplot',
+    show: bool = False,
 ):
     """
     Creates new figure and plots data.
 
     Args:
-        data_df: pdf DataFrame
+        `data_df`: `pandas.DataFrame`
+            Input data frame
 
-        group_key: column name, for grouping
+        `group_key`: `str` (optional), defaults to None.
+            Plot distribution from subgroups by grouping values in given category.
+            Must match exact value in df.column. Use `max_groups`
 
-        figure_params: dict used to initialize pyplot.Figure
+        `max_groups`: `int` (optional), defaults to 9.
+            Maximal amount of subgroups.
 
-        plot_params: dict used to affect plot params.
+        `figure_params`: `dict` (optional), defaults to None.
+            dict used to affect figure creation.
 
-        grid: bool,
+        `plot_params`: `_type_` (optional), defaults to None.
+            Dict of keyword arguments passed to matplotlib.pyplot.hist()
+            Example:
+            `plot_params=dict(bins=10)`
 
-        logy: bool, Y axis log scaling
+        `drawGrid`: `bool` (optional), defaults to True.
+            Flag to draw grid on each graph.
 
-        logx: bool, X axis log scaling
+        `logy`: `bool` (optional), defaults to False.
+            Y axis log scaling
 
-        split_windows: string
+        `logx`: `bool` (optional), defaults to False.
+            X axis log scaling
 
+        `split_windows`: `str` (optional), defaults to 'None'.
             group - new window for each category
 
             column - new window for each column
 
             category - same as column
 
-        show: bool, flag which calls `pyplot.show`
+        `legend_place`: `str` (optional), defaults to 'subplot'.
+            Position of the legend
 
-        legend_place:
+            'subplot' - legend is created in extra blank subplot
 
-        :param legend_place: str - position of the legend
+            'same' - last subplot
 
-        same - last subplot
+            'new' - same as `subplot`
 
-        subplot - new subplot just for legend
+            'external' - legend is placed in separate window
 
-        external - new window for legend
-
-    Returns:
-
+        `show`: `bool` (optional), defaults to False.
+            Flag meant to call `matplotlib.pyplot.show()`
     """
     data_df = data_df.copy()
     total_columns = data_df.shape[1]
@@ -107,6 +120,12 @@ def summary_plot(
     if 'alpha' not in plot_params:
         plot_params['alpha'] = 0.6
 
+    if group_key is not None:
+        max_groups = int(max_groups)
+        if max_groups <= 1:
+            _warn.warn("max_groups must be higher than 1. Omiting `group_key`")
+            group_key = None
+
     """
     SPLIT
         Split by group
@@ -128,6 +147,7 @@ def summary_plot(
         figure_list = None
 
     if group_key is not None:
+
         "Group data"
         group_dict = get_dataframe_groups(
             data_df, group_key=group_key, max_groups=max_groups)
@@ -160,7 +180,7 @@ def summary_plot(
 
             iterate_split_plot(
                 value, plot_rows, plot_cols,
-                grid=grid, plot_params=plot_params,
+                grid=drawGrid, plot_params=plot_params,
                 logy=logy, logx=logx,
                 figure_list=figures_for_column,
                 subplot_ind=ind + 1,
@@ -183,7 +203,7 @@ def summary_plot(
 
         if split_windows not in ['column', 'category', 'group']:
             _plt.tight_layout()
-            if legend_place == 'subplot':
+            if legend_place == 'subplot' or legend_place == 'new':
                 _plt.subplot(plot_rows, plot_cols, total_columns)
                 _create_legend(list(group_dict.keys()))
                 _plt.axis('off')
@@ -223,7 +243,7 @@ def summary_plot(
             subplot_ind = None
 
         iterate_split_plot(
-            data_df, plot_rows, plot_cols, grid, plot_params,
+            data_df, plot_rows, plot_cols, drawGrid, plot_params,
             logy=logy, logx=logx, figure_list=figure_list,
             subplot_ind=subplot_ind,
         )
@@ -235,6 +255,8 @@ def summary_plot(
             _plt.figure(figi.number)
             _plt.tight_layout()
             _plt.subplots_adjust(hspace=def_hspace)
+
+    _plt.tight_layout()
 
     if show:
         _plt.show()
@@ -485,6 +507,8 @@ def random_data_frame(rows_n=100, columns_N=10, classes_N=5):
 
 if __name__ == "__main__":
     import os
+    _np.arange(5)
+    import numpy as np
 
     # df = random_data_frame(150, columns_N=10, classes_N=8)
     from sklearn.datasets import load_iris
@@ -508,4 +532,4 @@ if __name__ == "__main__":
     _plt.suptitle("Iris dataset. Grouping by 'petal width'. 4 Groups")
     _plt.savefig(os.path.join(os.path.dirname(__file__),
                               "..", "pics", "summaryPlot.png"))
-    # plt.show()
+    _plt.show()

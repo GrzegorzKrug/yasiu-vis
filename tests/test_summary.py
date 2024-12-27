@@ -28,8 +28,8 @@ def test_first(short_data_frame):
     plt.close()
 
 
-testPicDir = os.path.join(os.path.dirname(__file__), "pics")
-os.makedirs(testPicDir, exist_ok=True)
+# testPicDir = os.path.join(os.path.dirname(__file__), "pics")
+# os.makedirs(testPicDir, exist_ok=True)
 
 data_1 = [
     (cols, cls_n, loc)
@@ -45,6 +45,7 @@ def test_2_varying_data(cols_n, cls_n, leg_loc):
     summary_plot(
         data, group_key='class', show=False,
         legend_place=leg_loc,
+        figure_params=dict(figsize=(15, 10))
     )
     plt.close("all")
 

@@ -6,38 +6,52 @@ from keras.models import Model as _Model
 
 
 def plotLayersWeights(
-    layers, innerCanvas=1, midScale=0.8,
-    numFmt=">4.2f",
-    figsize=(40, 30), dpi=70,
-    drawVertical=False,
-    separateFirstLast=True,
-    normalizeColors=False,
-    scaleWeights=None,
+    layers, innerCanvas: int = 1,
+    midScale: float = 0.8,
+    numFmt: str = ">4.2f",
+    figsize: tuple[int, int] = (40, 30), dpi=70,
+    drawVertical: bool = False,
+    separateFirstLast: bool = True,
+    normalizeColors: bool = False,
+    scaleWeights: bool = None,
 ):
     """
     Draws layers weights onto matplotlib figure.
 
-    layers: keras `Model` or `list` of keras `Layers`
+    Args:
+        `layers`: `list` of keras `Layers` or keras `Model`
+            Variable to plot weights from
 
-    innerCanvas: rows/columns for hidden layers.
+        `innerCanvas`: `int` (optional), defaults to 1
+            rows / columns for hidden layers.
 
-    midScale:Scales ratio for hidden layers when using `separateFirstLast` default 0.8
+        `midScale`: `float` (optional), defaults to 0.8
+            Grid space ratio for hidden layers, applied only when using `separateFirstLast=True`
 
-    numFmt: number formatter (omited when using `scaleWeights`)
+        `numFmt`: `str` (optional), defaults to ">4.2f"
+            Number formatter, omited when using `scaleWeights`
 
-    figsize: `tuple` of `int`s, passed to `pyplot.figure(figsize=figsize)`
+        `figsize`: `tuple` of 2 `ints` (optional), defaults to (40, 30)
+            passed to `pyplot.figure(figsize=figsize)`
 
-    dpi: integer, default=70, passed to `pyplot.figure(dpi=dpi)`
+        `dpi`: `int` (optional), defaults to 70
+            passed to `pyplot.figure(dpi=dpi)`
 
-    drawVertical: boolean, stack layers in vertical or horizontal direction
+        `drawVertical`: `bool` (optional), defaults to False
+            draw layers in vertical or horizontal direction
 
-    separateFirstLast: boolean, draw first and last layer independent from hidden layers
+        `separateFirstLast`: `bool` (optional), defaults to True
+            draw first and last layer independent from hidden layers
 
-    normalizeColors: boolean, Plot each layer in range of indiviudal values <min ,max>
+        `normalizeColors`: `bool` (optional), defaults to False
+            Normalize color map min/max value to each layer weights min/max.
 
-    scaleWeights: `int` or `float`: multiply weights and draw rounded integers instad.
-        Use 100 or 1000. (Less clutter on plot). Default 0.
+            When set to `False`, color map has range of <-1, 1> for each layer
 
+
+        `scaleWeights`: `bool` (optional), defaults to None
+            multiply weights and draw rounded integers instad.
+            Use 100 or 1000. (Less clutter on plot).
     """
     if isinstance(layers, (_Model,)):
         layers = layers.layers
