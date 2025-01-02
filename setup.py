@@ -54,7 +54,7 @@ with open(readme_path, "rt") as file:
 
 python_requires = '>=3.7'
 install_requires = [
-    "pandas", "matplotlib", "yasiu-math", "numpy"
+    "matplotlib", "yasiu-math", "numpy"
 ]
 
 setup(
@@ -77,12 +77,8 @@ setup(
 
     python_requires=python_requires,
     install_requires=install_requires,
-    # setup_requires=install_requires,
     package_dir={
         'yasiu_vis': 'yasiu_vis',
     },
 
-    # extras_require={
-    #     'keras': ['keras', 'tensorflow'],
-    # }
 )

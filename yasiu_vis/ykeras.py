@@ -1,8 +1,9 @@
 import matplotlib.pyplot as _plt
 import numpy as _np
-# from matplotlib.cm import get_cmap as _get_cmap
+
 from matplotlib.colors import Normalize as _Normalize
-from keras.models import Model as _Model
+
+import sys as _sys
 
 
 def plotLayersWeights(
@@ -19,7 +20,7 @@ def plotLayersWeights(
     Draws layers weights onto matplotlib figure.
 
     Args:
-        `layers`: `list` of keras `Layers` or keras `Model`
+        `layers`: `list` of keras layers or keras `Model` instance
             Variable to plot weights from
 
         `innerCanvas`: `int` (optional), defaults to 1
@@ -53,11 +54,19 @@ def plotLayersWeights(
             multiply weights and draw rounded integers instad.
             Use 100 or 1000. (Less clutter on plot).
     """
-    if isinstance(layers, (_Model,)):
-        layers = layers.layers
+    if "keras" in _sys.modules:
+        "Use feature only if keras is imported"
+        from keras import Model as _Model
+        if isinstance(layers, (_Model,)):
+            layers = layers.layers
 
-    elif not isinstance(layers, (list,)):
+    if not isinstance(layers, (list,)):
         layers = [layers]
+
+    if innerCanvas is None or isinstance(innerCanvas, (float, int)) and (innerCanvas < 1):
+        innerCanvas = 1
+    if midScale is None or isinstance(midScale, (int, float)) and (midScale < 0.1):
+        midScale = 0.8
 
     if innerCanvas == 1:
         separateFirstLast = False
@@ -229,9 +238,11 @@ __all__ = [
 
 if __name__ == "__main__":
     inputSize = 4
+    import os
+    os.environ["KERAS_BACKEND"] = "torch"
 
     import keras
-    import os
+    # import os
 
     model = keras.models.Sequential()
     model.add(keras.Input(shape=(inputSize,)))
@@ -246,15 +257,16 @@ if __name__ == "__main__":
     optim = keras.optimizers.Adam(learning_rate=0.001)
     model.compile(loss="mse", optimizer=optim)
 
-    X = _np.random.random((1000, 4))
-    Y = X[:, :2] + X[:, 2:]
+    # X = _np.random.random((1000, 4))
+    # Y = X[:, :2] + X[:, 2:]
 
-    model.fit(X, Y, epochs=20)
+    # model.fit(X, Y, epochs=20)
 
     plotLayersWeights(
         model, innerCanvas=1,
         figsize=(15, 12), dpi=80, scaleWeights=1000
     )
+    # _plt.show()
 
     _plt.suptitle(
         "Sequnetial model with dense layers. Weights are scaled for readability", size=20)

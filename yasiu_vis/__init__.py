@@ -1,5 +1,5 @@
-DESCRIPTION = "High level Visualisation for pandas and keras, based on matplotlib"
-VERSION = 0, 5, 3
+DESCRIPTION = "High level visualisation for pandas and keras, based on matplotlib"
+VERSION = 0, 6, 1
 
 
 __version__ = VERSION
