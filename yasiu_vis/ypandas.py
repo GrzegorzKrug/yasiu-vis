@@ -249,7 +249,7 @@ def summary_plot(
                 "Windows splitting: `group` not available without groupping")
 
         else:
-            plot_rows, plot_cols = get_grid_dims(total_columns)
+            plot_rows, plot_cols = get_grid_dims(total_columns, desiredRows=desired_rows)
             # figure_list = None
             subplot_ind = None
 
