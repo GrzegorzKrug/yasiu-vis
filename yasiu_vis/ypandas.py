@@ -11,13 +11,17 @@ from yasiu_math.math import round_number as _round_number
 import warnings as _warn
 
 
-def get_grid_dims(size):
+def get_grid_dims(size, desiredRows=None):
     if size <= 0:
         return 0, 0
 
-    sq = _np.sqrt(size)
-    rows = _np.floor(sq)
-    cols = rows + 1
+    if (desiredRows):
+        rows = desiredRows
+        cols = _np.ceil(size / rows)
+    else:
+        sq = _np.sqrt(size)
+        rows = _np.floor(sq)
+        cols = rows + 1
 
     if (rows * cols) < size:
         rows = cols
@@ -29,15 +33,13 @@ def get_grid_dims(size):
     return int(rows), int(cols)
 
 
-def _draw_hist(data, plot_params):
-    _plt.hist(data, **plot_params)
-
-
 def summary_plot(
     data_df: _pd.DataFrame, group_key: str = None, max_groups: int = 9,
     figure_params: dict = None, plot_params: dict = None, drawGrid=True,
     logy: bool = False, logx: bool = False,
-    split_windows: str = 'None', legend_place: str = 'subplot',
+    split_windows: str = 'None',
+    legend_place: str = 'subplot',
+    desired_rows=None,
     show: bool = False,
 ):
     """
@@ -48,11 +50,11 @@ def summary_plot(
             Input data frame
 
         `group_key`: `str` (optional), defaults to None.
-            Plot distribution from subgroups by grouping values in given category.
+            Plot distribution from subgroups by groupping values in given category.
             Must match exact value in df.column. Use `max_groups`
 
         `max_groups`: `int` (optional), defaults to 9.
-            Maximal amount of subgroups.
+            Maximal amount of subgroups. Used for spliting continuous values int bins.
 
         `figure_params`: `dict` (optional), defaults to None.
             dict used to affect figure creation.
@@ -83,11 +85,14 @@ def summary_plot(
 
             'subplot' - legend is created in extra blank subplot
 
-            'same' - last subplot
-
             'new' - same as `subplot`
 
+            'same' - last subplot
+
             'external' - legend is placed in separate window
+
+        `desired_rows` : `int` (optional), default to None
+            Sets exact amount of rows in subplot layout.
 
         `show`: `bool` (optional), defaults to False.
             Flag meant to call `matplotlib.pyplot.show()`
@@ -131,6 +136,7 @@ def summary_plot(
         Split by group
         Split by category/column
     """
+    split_windows = split_windows.lower()
     if split_windows in ['column', 'category']:
         if group_key is not None:
             figure_list = [_plt.figure(**figure_params)
@@ -138,7 +144,6 @@ def summary_plot(
         else:
             figure_list = [_plt.figure(**figure_params)
                            for _ in range(total_columns)]
-
     elif split_windows in ['group']:
         figure_list = []
 
@@ -148,6 +153,12 @@ def summary_plot(
 
     if group_key is not None:
 
+        uniq = data_df[group_key].unique()
+        if (uniq.shape[0] > max_groups and not _pd.api.types.is_numeric_dtype(data_df[group_key])):
+            print(
+                f"Selected column `{group_key}` is not numeric and `max_groups` is smaller than unique count: {uniq.shape[0]}.")
+            return
+
         "Group data"
         group_dict = get_dataframe_groups(
             data_df, group_key=group_key, max_groups=max_groups)
@@ -156,9 +167,9 @@ def summary_plot(
             total_columns -= 1
 
         if split_windows in ['column', 'category']:
-            plot_rows, plot_cols = get_grid_dims(len(group_dict))
+            plot_rows, plot_cols = get_grid_dims(len(group_dict), desiredRows=desired_rows)
         else:
-            plot_rows, plot_cols = get_grid_dims(total_columns)
+            plot_rows, plot_cols = get_grid_dims(total_columns, desiredRows=desired_rows)
 
         for ind, (group_name, value) in enumerate(group_dict.items()):
             "Plot given selection matching to criteria"
@@ -168,21 +179,21 @@ def summary_plot(
             if split_windows == "group":
                 fig = _plt.figure(**figure_params)
                 figure_list.append(fig)
-                figures_for_column = None
+                curFigList = None
                 title = None
 
             elif split_windows in ['column', 'category']:
                 title = group_name
-                figures_for_column = figure_list
+                curFigList = figure_list
             else:
                 title = None
-                figures_for_column = None
+                curFigList = None
 
             iterate_split_plot(
                 value, plot_rows, plot_cols,
                 grid=drawGrid, plot_params=plot_params,
                 logy=logy, logx=logx,
-                figure_list=figures_for_column,
+                figure_list=curFigList,
                 subplot_ind=ind + 1,
                 title=title,
             )
@@ -199,7 +210,7 @@ def summary_plot(
             else:
                 "No slip, stacked images"
                 "Put legend as group"
-                _plt.suptitle(f"Grouping by '{group_key}'")
+                _plt.suptitle(f"Groupping by '{group_key}'")
 
         if split_windows not in ['column', 'category', 'group']:
             _plt.tight_layout()
@@ -226,7 +237,7 @@ def summary_plot(
                 _plt.figure(figure.number)
                 _plt.tight_layout()
                 if split_windows in ['column', 'category']:
-                    _plt.suptitle(f"Values of '{columns[ind]}' per grouping")
+                    _plt.suptitle(f"Values of '{columns[ind]}' per groupping")
 
     else:
         if split_windows in ['column', 'category']:
@@ -235,7 +246,7 @@ def summary_plot(
             subplot_ind = 1
         elif split_windows == 'group':
             raise KeyError(
-                "Windows splitting: `group` not available without grouping")
+                "Windows splitting: `group` not available without groupping")
 
         else:
             plot_rows, plot_cols = get_grid_dims(total_columns)
@@ -253,8 +264,8 @@ def summary_plot(
     if figure_list:
         for figi in figure_list:
             _plt.figure(figi.number)
-            _plt.tight_layout()
             _plt.subplots_adjust(hspace=def_hspace)
+            _plt.tight_layout()
 
     _plt.tight_layout()
 
@@ -276,7 +287,7 @@ def _create_legend(names_list, size=10):
 
 def iterate_split_plot(
         data_df, plot_rows, plot_cols, grid, plot_params, logx=False, logy=False,
-        figure_list=None, subplot_ind=None, title=None, suptitle=None,
+        figure_list=None, subplot_ind=None, title=None, suptitle=None, rotation=15,
 ):
     """
     Plot every column separately
@@ -308,13 +319,75 @@ def iterate_split_plot(
         else:
             _plt.subplot(plot_rows, plot_cols, col_ind + 1)
 
-        _draw_hist(value, plot_params)
-        _plt.xticks(rotation=30)
-
         if title:
             _plt.title(title)
         else:
             _plt.title(name)
+
+        "Cast values for _plt.hist"
+        # print(f"col index: {col_ind}, name: {name}, type: {value.dtype}")
+        if isinstance(value.dtype, _pd.CategoricalDtype):
+            value = value.astype("string")
+        elif _pd.api.types.is_object_dtype(value.dtype):
+            "UNDEFINED TYPE, TRY FLOAT OR STRING "
+            convertSuccess = False
+
+            try:
+                value = value.astype(float)
+                # print("CONVERTED TO FLOAT!")
+                convertSuccess = True
+            except Exception:
+                pass
+
+            try:
+                if (not convertSuccess):
+                    value = value.astype("string")
+                    convertSuccess = True
+                    # print(f"CONVERTED TO STR! {value.dtype}")
+            except Exception as err:
+                # print(f"Can't conver to str: {err}")
+                pass
+
+            # print("RETURNING!")
+            # continue
+            if (not convertSuccess):
+                print(
+                    f"Not suppoted column found in dataframe: {name}, can not convert to float or string.")
+                continue
+
+        # print(f"col index: {col_ind}, name: {name}, type: {value.dtype}")
+        nanMask = value.isna()
+        value = value[~nanMask]
+
+        # print(f"Plotting: {value.dtype}, {value.shape}, params: {plot_params}")
+        if isinstance(value.dtype, (_pd.StringDtype, bool)) or value.dtype == bool or value.dtype == _np.bool:
+            # print(type(value))
+            # value : _pd.Series
+            ct = value.value_counts()
+            # print(f"Count: {ct}")
+            if (ct.shape[0] < 10):
+                _plt.bar(ct.index, ct, log=logy, **plot_params)
+            else:
+                # print(f"Too many items in {name}! Plotting unique value count")
+                _plt.xlabel("Shared value")
+                _plt.hist(ct, log=logy, **plot_params)
+
+            loc, label = _plt.xticks()
+            # print(loc)
+            # print(lab)
+            # clean_numbers = [int(l.get_text().replace('−', '-')) for l in lab]
+            if (ct.shape[0] < 10):
+                pass
+                # print(ct.index)
+                # print(label)
+                # _plt.xticks(loc, ct.index.astype(str), rotation=30)
+            else:
+                _plt.xticks(loc, _np.array(loc, dtype=int), rotation=30)
+
+        else:
+            _plt.hist(value, log=logy, **plot_params)
+
+        _plt.xticks(rotation=rotation)
 
         if suptitle is not None:
             _plt.suptitle(suptitle)
@@ -329,52 +402,49 @@ def iterate_split_plot(
         elif logx:
             _plt.semilogx()
 
-        # plt.tight_layout()
-
 
 def get_dataframe_groups(data_df, group_key, max_groups=10):
     filter_column = data_df.pop(group_key)
     filter_array = _np.array(filter_column)
-    # print("DATA DF columns:")
-    # print(data_df.columns)
     output_dict = dict()
 
     unique_vals = filter_column.unique()
 
     grouped_keys_dict = cluster_keys(unique_vals, max_groups=max_groups)
-
-    for this_group, group_val_list in grouped_keys_dict.items():
-        desired_keys = _np.array(group_val_list).reshape(-1, 1)
-        # print(desired_keys.shape)
-        # print(filter_array.shape)
+    for key_name, group_list_values in grouped_keys_dict.items():
+        desired_keys = _np.array(group_list_values).reshape(-1, 1)
 
         mask = (desired_keys == filter_array).any(axis=0)
-        # print(mask)
-        minidf = data_df.loc[mask, :]
+        if (_pd.isna(group_list_values).any()):
+            nanMask = _pd.isna(filter_array)
+            mask = mask | nanMask
+            # print(key_name, type(group_list_values))
 
-        output_dict[f"{group_key}={this_group}"] = minidf
+        minidf = data_df.loc[mask, :]
+        output_dict[f"{group_key}={key_name}"] = minidf
 
     return output_dict
 
 
 def cluster_keys(keys, max_groups=10, numeric_keys_rounding=5):
+    "Find values. Returns dict, in case numeric types must grouped into ranges."
     keys = list(keys)
     output_dict = dict()
 
     # keys = keys[:5]
 
     "Check if all values are numeric"
-    is_numeric = True
+    are_allNumeric = True
+    # print(f"Clustering keys: {keys}")
     for key in keys:
-        if not isinstance(key, (int, float, _np.number)):
-            is_numeric = False
+        if not isinstance(key, (int, float, _np.number)) or type(key) is bool or type(key) is _np.bool:
+            are_allNumeric = False
             break
 
     if len(keys) > max_groups:
         keys.sort()
 
         "<ADD NUMERIC CLUSTERING HERE>"
-
         # size = len(keys)
         # step = size / max_groups
         # step = np.floor(step).astype(int)
@@ -383,21 +453,6 @@ def cluster_keys(keys, max_groups=10, numeric_keys_rounding=5):
         # last_key = None
 
         "FIRST"
-        # for i in range(max_groups):
-        #     select = keys[i * step:i * step + step]
-        #     if is_numeric:
-        #         short_nums = [str(round_number(num)) for num in select]
-        #         key = shrink_array_to_string(short_nums, 20, rounding=5)
-        #     else:
-        #         key = shrink_array_to_string(select, 20, rounding=5)
-        #
-        #     last_key = key
-        #     output_dict[key] = select
-        #
-        # grp = len(output_dict) - 1
-        # "Add last values"
-        # for val in keys[grp * step + step:]:
-        #     output_dict[last_key].append(val)
         "Linspace"
         indexes = _np.linspace(
             0, len(keys), max_groups + 1).round().astype(int)
@@ -407,7 +462,7 @@ def cluster_keys(keys, max_groups=10, numeric_keys_rounding=5):
 
         for first, last in zip(indexes, indexes[1:]):
             select = keys[first:last]
-            if is_numeric:
+            if are_allNumeric:
                 short_nums = [str(_round_number(num)) for num in select]
                 key = shrink_array_to_string(short_nums, )
             else:
@@ -418,9 +473,9 @@ def cluster_keys(keys, max_groups=10, numeric_keys_rounding=5):
 
     else:
         for k in keys:
-            if is_numeric:
-                this_num_str = str(_round_number(
-                    k, round=numeric_keys_rounding))
+            # print(f"All are numeric: {are_allNumeric}")
+            if are_allNumeric:
+                this_num_str = str(_round_number(k, round=numeric_keys_rounding))
                 output_dict[this_num_str] = [k]
             else:
                 output_dict[k] = [k]
@@ -477,10 +532,6 @@ def shrink_array_to_string(arr, max_size=20, rounding=5, ignore_minimal_size_err
     return "[" + first + middle + last + "]"
 
 
-def _draw_plot(data, plot_params):
-    _plt.plot(data, **plot_params)
-
-
 __all__ = ["shrink_array_to_string", "summary_plot",
            "get_grid_dims", "iterate_split_plot"]
 
@@ -488,14 +539,14 @@ __all__ = ["shrink_array_to_string", "summary_plot",
 def random_data_frame(rows_n=100, columns_N=10, classes_N=5):
     columns = [f"col-{chr(num + 65)}" for num in range(columns_N)]
     columns += ['class']
-    print("columns:")
-    print(columns)
+    # print("columns:")
+    # print(columns)
 
     df = _pd.DataFrame(columns=columns)
     for ind in range(rows_n):
 
         "Random Numbers"
-        rnd = _np.random.random(columns_N+1)
+        rnd = _np.random.random(columns_N + 1)
         df.loc[ind] = rnd
 
         "Random Classes"
@@ -529,7 +580,7 @@ if __name__ == "__main__":
         plot_params=dict(alpha=0.7),
         legend_place='subplot'
     )
-    _plt.suptitle("Iris dataset. Grouping by 'petal width'. 4 Groups")
+    _plt.suptitle("Iris dataset. Groupping by 'petal width'. 4 Groups")
     _plt.savefig(os.path.join(os.path.dirname(__file__),
                               "..", "pics", "summaryPlot.png"))
     _plt.show()

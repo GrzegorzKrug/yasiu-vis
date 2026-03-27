@@ -19,16 +19,28 @@ pip install yasiu-vis
 from yasiu_vis.ypandas import summary_plot
 
 
-# df: pandas.DataFrame
+# df is DataFrame
+df: pandas.DataFrame
+
+# Histogram of each fature
+summary_plot(df)
+
+# Plotted grouped by 1 column
 summary_plot(df, split_windows='group')
+
+# More params
 summary_plot(
-    df, group_key='petal width (cm)', max_groups=4,
+    df, group_key='petal width (cm)', max_groups=4, logy=False,
+    figure_params=dict(figsize=(12,7)),
     plot_params=dict(alpha=0.7),
+    split_windows="None",
 )
 
 ```
 <!-- ![Summary Plot](./pics/summaryPlot.png) -->
 ![Dataset Summary Plot](https://raw.githubusercontent.com/GrzegorzKrug/yasiu-vis/refs/heads/main/pics/summaryPlot.png)
+
+![Dataset Summary Plot](https://raw.githubusercontent.com/GrzegorzKrug/yasiu-vis/refs/heads/main/pics/SpaceTitan.png)
 
 ## Keras - Ploting Neural Network layers
 ```py
