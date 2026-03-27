@@ -30,7 +30,8 @@ summary_plot(df, split_windows='group')
 
 # More params
 summary_plot(
-    df, group_key='petal width (cm)', max_groups=4, logy=False,
+    df, group_key='petal width (cm)', max_groups=4,
+    logy=False, desired_rows=2,
     figure_params=dict(figsize=(12,7)),
     plot_params=dict(alpha=0.7),
     split_windows="None",
