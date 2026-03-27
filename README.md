@@ -1,6 +1,6 @@
 # Readme of `yasiu-vis`
 
-High level functions, to quickly visualise data frames.
+High level functions to visualise data.
 
 # Installation
 
